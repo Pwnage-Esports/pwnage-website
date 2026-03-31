@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pwnage Esports B.V. — Competitive Gaming Infrastructure</title>
+    <meta name="description" content="Pwnage Esports builds Goblam, the next-generation online esports tournament platform.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #0a0a0c;
+            --bg-secondary: #111115;
+            --bg-card: #16161a;
+            --accent: #e63946;
+            --accent-glow: rgba(230, 57, 70, 0.3);
+            --text-primary: #f0eff4;
+            --text-secondary: #8b8a94;
+            --text-muted: #55545e;
+            --border: #2a2a30;
+            --font-display: 'Bebas Neue', sans-serif;
+            --font-mono: 'Space Mono', monospace;
+            --font-body: 'DM Sans', sans-serif;
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ── Geometric background ── */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 80px 80px;
+            opacity: 0.15;
+        }
+
+        .bg-gradient {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse 60% 50% at 20% 0%, rgba(230, 57, 70, 0.08) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 80% 100%, rgba(230, 57, 70, 0.05) 0%, transparent 60%);
+        }
+
+        /* ── Nav ── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(12px);
+            background: rgba(10, 10, 12, 0.7);
+            border-bottom: 1px solid var(--border);
+            transition: padding 0.3s ease;
+        }
+
+        nav.scrolled {
+            padding: 1rem 3rem;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            letter-spacing: 0.15em;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-mark {
+            width: 36px;
+            height: 36px;
+            background: var(--accent);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .logo-mark span {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            color: white;
+            margin-top: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        /* ── Content wrapper ── */
+        .content {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 8rem 3rem 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero-tag {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.8s ease forwards 0.3s;
+        }
+
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(3.5rem, 9vw, 8rem);
+            line-height: 0.95;
+            letter-spacing: 0.04em;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 0.8s ease forwards 0.5s;
+        }
+
+        .hero h1 .accent {
+            color: var(--accent);
+            position: relative;
+        }
+
+        .hero h1 .accent::after {
+            content: '';
+            position: absolute;
+            bottom: 0.08em;
+            left: 0;
+            right: 0;
+            height: 0.06em;
+            background: var(--accent);
+            opacity: 0.4;
+        }
+
+        .hero-desc {
+            font-size: 1.15rem;
+            font-weight: 300;
+            color: var(--text-secondary);
+            max-width: 560px;
+            line-height: 1.8;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.8s ease forwards 0.7s;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.8s ease forwards 0.9s;
+        }
+
+        .btn-primary {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 1rem 2.5rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+        }
+
+        .btn-primary:hover {
+            background: #ff4757;
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .btn-ghost {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 1rem 2.5rem;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+        }
+
+        /* ── Diagonal divider ── */
+        .divider {
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(to bottom right, var(--bg-primary) 49.5%, var(--bg-secondary) 50.5%);
+        }
+
+        /* ── Section base ── */
+        section {
+            padding: 6rem 3rem;
+        }
+
+        .section-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            letter-spacing: 0.04em;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-weight: 300;
+            max-width: 520px;
+            margin-bottom: 3.5rem;
+        }
+
+        /* ── Product section ── */
+        #product {
+            background: var(--bg-secondary);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .product-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .product-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            background: var(--bg-secondary);
+        }
+
+        .product-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.75rem;
+        }
+
+        .product-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* ── Stats ── */
+        #traction {
+            background: var(--bg-primary);
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+
+        .stat::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            color: var(--accent);
+            letter-spacing: 0.04em;
+        }
+
+        .stat-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* ── About ── */
+        #about {
+            background: var(--bg-secondary);
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .about-text {
+            color: var(--text-secondary);
+            font-weight: 300;
+            line-height: 1.9;
+            font-size: 1.05rem;
+        }
+
+        .about-text p + p {
+            margin-top: 1.5rem;
+        }
+
+        .info-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .info-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+        }
+
+        .info-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            min-width: 100px;
+        }
+
+        .info-value {
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        /* ── Contact ── */
+        #contact {
+            background: var(--bg-primary);
+            text-align: center;
+        }
+
+        .contact-cta {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            letter-spacing: 0.04em;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-desc {
+            color: var(--text-secondary);
+            font-weight: 300;
+            margin-bottom: 2.5rem;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .contact-email {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            color: var(--accent);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.3s;
+        }
+
+        .contact-email:hover {
+            border-color: var(--accent);
+        }
+
+        /* ── Footer ── */
+        footer {
+            padding: 2rem 3rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        footer a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: var(--text-secondary);
+        }
+
+        /* ── Animations ── */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .reveal {
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .reveal-d1 { animation-delay: 0.1s; }
+        .reveal-d2 { animation-delay: 0.2s; }
+        .reveal-d3 { animation-delay: 0.3s; }
+        .reveal-d4 { animation-delay: 0.4s; }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 7rem 1.5rem 3rem;
+            }
+
+            section {
+                padding: 4rem 1.5rem;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            footer {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+
+    <nav id="navbar">
+        <a href="#" class="logo">
+            <div class="logo-mark"><span>P</span></div>
+            PWNAGE
+        </a>
+        <ul class="nav-links">
+            <li><a href="#product">Product</a></li>
+            <li><a href="#traction">Traction</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <section class="hero">
+            <div class="hero-tag">Pwnage Esports B.V.</div>
+            <h1>THE FUTURE OF<br>COMPETITIVE<br><span class="accent">GAMING</span></h1>
+            <p class="hero-desc">
+                We're building Goblam — a next-generation online tournament platform
+                that makes competitive esports accessible, scalable, and fair.
+            </p>
+            <div class="hero-actions">
+                <a href="#contact" class="btn-primary">Get in Touch</a>
+                <a href="#product" class="btn-ghost">Learn More</a>
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <section id="product">
+            <div class="section-inner">
+                <div class="reveal">
+                    <div class="section-label">// Our Product</div>
+                    <h2 class="section-title">GOBLAM</h2>
+                    <p class="section-subtitle">
+                        A comprehensive tournament platform designed for the modern esports ecosystem.
+                    </p>
+                </div>
+                <div class="product-grid">
+                    <div class="product-card reveal reveal-d1">
+                        <div class="card-icon">&#9876;</div>
+                        <h3>TOURNAMENT ENGINE</h3>
+                        <p>Automated bracket generation, seeding, and match scheduling across multiple formats — from single elimination to Swiss and round-robin.</p>
+                    </div>
+                    <div class="product-card reveal reveal-d2">
+                        <div class="card-icon">&#9881;</div>
+                        <h3>REAL-TIME INFRASTRUCTURE</h3>
+                        <p>Live match tracking, instant results, and real-time leaderboards powered by a robust event-driven architecture.</p>
+                    </div>
+                    <div class="product-card reveal reveal-d3">
+                        <div class="card-icon">&#9733;</div>
+                        <h3>COMPETITIVE INTEGRITY</h3>
+                        <p>Built-in anti-cheat integration, dispute resolution workflows, and transparent ranking systems that players and organisers trust.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider" style="transform: scaleX(-1);"></div>
+
+        <section id="traction">
+            <div class="section-inner">
+                <div class="reveal">
+                    <div class="section-label">// Traction</div>
+                    <h2 class="section-title">BUILDING MOMENTUM</h2>
+                    <p class="section-subtitle">
+                        Pre-launch phase — assembling the team, refining the product, and laying the groundwork.
+                    </p>
+                </div>
+                <div class="stats-row reveal">
+                    <div class="stat">
+                        <div class="stat-value">2026</div>
+                        <div class="stat-label">Founded</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">NL</div>
+                        <div class="stat-label">Headquarters</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">PRE</div>
+                        <div class="stat-label">Launch Phase</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">B2B+B2C</div>
+                        <div class="stat-label">Market Model</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <section id="about">
+            <div class="section-inner">
+                <div class="reveal">
+                    <div class="section-label">// About</div>
+                    <h2 class="section-title">PWNAGE ESPORTS B.V.</h2>
+                </div>
+                <div class="about-content">
+                    <div class="about-text reveal">
+                        <p>
+                            Pwnage Esports is a Netherlands-based company building infrastructure
+                            for the competitive gaming industry. Our flagship product, Goblam,
+                            is an online esports tournament system designed to serve organisers,
+                            teams, and players at every level of competition.
+                        </p>
+                        <p>
+                            We believe competitive gaming deserves purpose-built tooling —
+                            not patched-together spreadsheets and Discord bots. Goblam
+                            delivers a professional-grade experience from registration to results.
+                        </p>
+                    </div>
+                    <ul class="info-list reveal">
+                        <li>
+                            <span class="info-label">Entity</span>
+                            <span class="info-value">Pwnage Esports B.V.</span>
+                        </li>
+                        <li>
+                            <span class="info-label">KVK</span>
+                            <span class="info-value">42019847</span>
+                        </li>
+                        <li>
+                            <span class="info-label">Product</span>
+                            <span class="info-value">Goblam — Online Tournament Platform</span>
+                        </li>
+                        <li>
+                            <span class="info-label">Status</span>
+                            <span class="info-value">Pre-launch / In Development</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider" style="transform: scaleX(-1);"></div>
+
+        <section id="contact">
+            <div class="section-inner reveal">
+                <div class="section-label">// Contact</div>
+                <h2 class="contact-cta">LET'S TALK</h2>
+                <p class="contact-desc">
+                    Interested in Goblam or exploring partnership opportunities?
+                    We'd love to hear from you.
+                </p>
+                <a href="mailto:info@pwnage.nl" class="contact-email">info@pwnage.nl</a>
+            </div>
+        </section>
+
+        <footer>
+            <span>&copy; 2026 Pwnage Esports B.V. — KVK 42019847</span>
+            <span>The Netherlands</span>
+        </footer>
+    </div>
+
+    <script>
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(anchor.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
