@@ -483,18 +483,20 @@
             margin-right: auto;
         }
 
-        .contact-email {
-            font-family: var(--font-mono);
-            font-size: 1rem;
-            color: var(--accent);
-            text-decoration: none;
-            letter-spacing: 0.05em;
-            border-bottom: 1px solid transparent;
-            transition: border-color 0.3s;
+        .contact-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
         }
 
-        .contact-email:hover {
-            border-color: var(--accent);
+        .contact-note {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-top: 1.5rem;
         }
 
         /* ── Footer ── */
@@ -725,9 +727,19 @@
                 <h2 class="contact-cta">LET'S TALK</h2>
                 <p class="contact-desc">
                     Interested in Goblam or exploring partnership opportunities?
-                    We'd love to hear from you.
+                    Register your interest and we'll route it to the right person.
                 </p>
-                <a href="mailto:info@pwnage.nl" class="contact-email">info@pwnage.nl</a>
+                <div class="contact-actions">
+                    <a
+                        href="https://tally.so/r/Y5JX66?source=pwnage.nl&audience=investor_partner&cta=contact_section"
+                        class="btn-primary js-tally-popup"
+                        data-tally-form-id="Y5JX66"
+                        data-tally-source="pwnage.nl"
+                        data-tally-audience="investor_partner"
+                        data-tally-cta="contact_section"
+                    >Register Interest</a>
+                </div>
+                <p class="contact-note">Protected by Tally and reCAPTCHA</p>
             </div>
         </section>
 
@@ -754,6 +766,31 @@
                 }
             });
         });
+
+        document.querySelectorAll('.js-tally-popup').forEach(trigger => {
+            trigger.addEventListener('click', event => {
+                const formId = trigger.dataset.tallyFormId;
+                if (!window.Tally || !formId) {
+                    return;
+                }
+
+                event.preventDefault();
+                window.Tally.openPopup(formId, {
+                    layout: 'modal',
+                    width: 720,
+                    overlay: true,
+                    hiddenFields: {
+                        source: trigger.dataset.tallySource,
+                        audience: trigger.dataset.tallyAudience,
+                        cta: trigger.dataset.tallyCta,
+                        originUrl: window.location.href,
+                        originPath: window.location.pathname,
+                        referrer: document.referrer
+                    }
+                });
+            });
+        });
     </script>
+    <script src="https://tally.so/widgets/embed.js" defer></script>
 </body>
 </html>
