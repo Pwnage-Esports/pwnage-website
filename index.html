@@ -286,6 +286,33 @@
             margin-bottom: 1rem;
         }
 
+        .section-title.product-name {
+            font-family: var(--font-body);
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .section-title a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3em;
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .section-title a:hover {
+            color: var(--accent);
+        }
+
+        .section-title .external-icon {
+            width: 0.38em;
+            height: 0.38em;
+            opacity: 0.55;
+            flex-shrink: 0;
+            transform: translateY(-0.08em);
+        }
+
         .section-subtitle {
             color: var(--text-secondary);
             font-weight: 300;
@@ -603,7 +630,7 @@
             <div class="hero-tag">Pwnage Esports B.V.</div>
             <h1>THE FUTURE OF<br>COMPETITIVE<br><span class="accent">GAMING</span></h1>
             <p class="hero-desc">
-                We're building Goblam — a next-generation online tournament platform
+                We're building GoBLAM — a next-generation online tournament platform
                 that makes competitive esports accessible, scalable, and fair.
             </p>
             <div class="hero-actions">
@@ -618,7 +645,16 @@
             <div class="section-inner">
                 <div class="reveal">
                     <div class="section-label">// Our Product</div>
-                    <h2 class="section-title">GOBLAM</h2>
+                    <h2 class="section-title product-name">
+                        <a href="https://goblam.gg" target="_blank" rel="noopener noreferrer" aria-label="GoBLAM (opens in a new tab)">
+                            GoBLAM
+                            <svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                <polyline points="15 3 21 3 21 9"/>
+                                <line x1="10" y1="14" x2="21" y2="3"/>
+                            </svg>
+                        </a>
+                    </h2>
                     <p class="section-subtitle">
                         A comprehensive tournament platform designed for the modern esports ecosystem.
                     </p>
